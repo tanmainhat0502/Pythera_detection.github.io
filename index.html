@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYTHERA Detection - Hybrid CNN-Transformer Object Detection Model</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="project-title">PYTHERA Detection</h1>
+            <p class="project-subtitle">Hybrid CNN-Transformer Object Detection Model</p>
+            <div class="header-badges">
+                <span class="badge">Computer Vision</span>
+                <span class="badge">Object Detection</span>
+                <span class="badge">Deep Learning</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#video-demo">Video Demo</a></li>
+                <li><a href="#dataset">Dataset</a></li>
+                <li><a href="#model">Model</a></li>
+                <li><a href="#result">Result</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Abstract Section -->
+            <section id="abstract" class="section">
+                <h2 class="section-title">Abstract</h2>
+                <div class="section-content">
+                    <p class="lead">
+                        PYTHERA Detection is a hybrid object detection model that combines CNN backbone and Transformer architecture, 
+                        designed to address the inference speed issues of traditional detection models like YOLO.
+                    </p>
+                    
+                    <div class="problem-solution">
+                        <div class="problem-box">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Problem</h3>
+                            <p>
+                                Traditional detection models like YOLO have an NMS (Non-Maximum Suppression) layer 
+                                that makes inference slow, making them unsuitable for real-time applications.
+                            </p>
+                        </div>
+                        
+                        <div class="solution-box">
+                            <h3><i class="fas fa-lightbulb"></i> Solution</h3>
+                            <p>
+                                Combining a hybrid architecture between YOLO and DETR, using the query method in transformer 
+                                to eliminate the NMS layer, maintaining performance while significantly improving inference speed.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="comparison-section">
+                        <h3>Traditional YOLO vs DETR Comparison</h3>
+                        <div class="image-container">
+                            <img src="image/Adavantage_between_one_and_two_stages.png" 
+                                 alt="Advantage between one and two stages" 
+                                 class="section-image">
+                        </div>
+                        <p class="image-caption">
+                            Traditional YOLO must go through the NMS layer, while DETR only requires queries, resulting in significantly improved speed.
+                        </p>
+                    </div>
+
+                    <!-- Video Demo -->
+                    <div id="video-demo" class="video-demo">
+                        <h3><i class="fab fa-youtube"></i> Video Demo</h3>
+                        
+                        <!-- Video 1: Inference Demo -->
+                        <div class="video-item">
+                            <h4>Inference Pythera Detection</h4>
+                            <div class="video-container">
+                                <iframe
+                                    src="https://www.youtube.com/embed/AkgIbOkYNL8"
+                                    title="Inference for Pythera Detection"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+
+                        <!-- Video 2: FPS Benchmark -->
+                        <div class="video-item">
+                            <h4>Pythera Detection, YOLOv9, YOLOv12 FPS Benchmark</h4>
+                            <div class="video-container">
+                                <iframe
+                                    src="https://www.youtube.com/embed/3jWkgh7KHZk"
+                                    title="Pythera_detection_vs_Yolov9_12"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dataset Section -->
+            <section id="dataset" class="section">
+                <h2 class="section-title">Dataset</h2>
+                <div class="section-content">
+                    <div class="dataset-grid">
+                        <div class="dataset-card">
+                            <h3>COCO Dataset</h3>
+                            <p>
+                                Used for training and initial performance evaluation of the model 
+                                through the mAP50 metric. This dataset is the industry standard for object detection.
+                            </p>
+                            <div class="image-container">
+                                <img src="image/Cocodataset.png" 
+                                     alt="Evaluation on COCO dataset" 
+                                     class="section-image">
+                            </div>
+                        </div>
+
+                        <div class="dataset-card">
+                            <h3>Human Crowded Dataset</h3>
+                            <p>
+                                A custom-built dataset to evaluate performance on the human detection problem. 
+                                This dataset has the following characteristics:
+                            </p>
+                            <ul class="dataset-features">
+                                <li>Bounding boxes with significant overlap</li>
+                                <li>Bounding boxes misaligned from the original objects</li>
+                                <li>Goal: evaluate performance for human detection tasks</li>
+                            </ul>
+                            <div class="image-container">
+                                <img src="image/humancrowded_dataset.png" 
+                                     alt="Human crowded dataset" 
+                                     class="section-image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Model Section -->
+            <section id="model" class="section">
+                <h2 class="section-title">Model Architecture</h2>
+                <div class="section-content">
+                    <div class="architecture-description">
+                        <p>
+                            The PYTHERA Detection architecture combines the CNN backbone from YOLOv9 with the transformer decoder from DETR. 
+                            This allows the model to:
+                        </p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check-circle"></i> Maintain the high performance of YOLOv9</li>
+                            <li><i class="fas fa-check-circle"></i> Eliminate the NMS layer through the query mechanism in transformer</li>
+                            <li><i class="fas fa-check-circle"></i> Achieve significantly faster inference speed</li>
+                        </ul>
+                    </div>
+
+                    <div class="image-container architecture-image">
+                        <img src="image/Yolov9_detrdecoder.png" 
+                             alt="YOLOv9 DETR Decoder Architecture" 
+                             class="section-image">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Result Section -->
+            <section id="result" class="section">
+                <h2 class="section-title">Results</h2>
+                <div class="section-content">
+                    <!-- COCO Evaluation Results -->
+                    <div class="result-subsection">
+                        <h3>1. Results on COCO Dataset</h3>
+                        <p>
+                            After training on the COCO dataset, PYTHERA model only lags behind YOLOv9 by approximately 2% in mAP50, 
+                            demonstrating that performance is well maintained.
+                        </p>
+                        <div class="image-container">
+                            <img src="image/Eval_on_coco_dataset.png" 
+                                 alt="Evaluation on COCO dataset" 
+                                 class="section-image">
+                        </div>
+                    </div>
+
+                    <!-- Human Crowded Dataset Results -->
+                    <div class="result-subsection">
+                        <h3>2. Results on Human Crowded Dataset</h3>
+                        <p>
+                            Comparing PYTHERA Detection with YOLOv9, YOLO-DETR, and YOLOS on the Human Crowded dataset:
+                        </p>
+                        <div class="image-container">
+                            <img src="image/pythera_yolov9_detr_yolos_result.png" 
+                                 alt="Pythera YOLOv9 DETR YOLOS Results" 
+                                 class="section-image">
+                        </div>
+                        <div class="result-highlights">
+                            <div class="highlight-box success">
+                                <strong>Results:</strong> PYTHERA Detection (YOLOv9 + DETR) completely outperforms YOLOS and DETR. 
+                                Compared to YOLOv9, it only lags behind by approximately ~1%.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hardware and Latency Analysis -->
+                    <div class="result-subsection">
+                        <h3>3. Hardware Specifications and Latency Analysis</h3>
+                        <p>
+                            Hardware specifications for training and inference of YOLOv9, YOLO-DEYO (PYTHERA Detection), YOLOS, and YOLO-DETR:
+                        </p>
+                        <div class="image-container">
+                            <img src="image/Computing_device.png" 
+                                 alt="Computing device specifications" 
+                                 class="section-image">
+                        </div>
+
+                        <p style="margin-top: 30px;">
+                            Latency results (ms) when inferencing on the same device for all 4 models:
+                        </p>
+                        <div class="image-container">
+                            <img src="image/cpu_gpu_compare.png" 
+                                 alt="CPU and GPU latency comparison" 
+                                 class="section-image">
+                        </div>
+
+                        <div class="result-highlights">
+                            <div class="highlight-box success">
+                                <strong>Key Findings:</strong> YOLO-DEYO (PYTHERA Detection) demonstrates superior inference speed 
+                                on both CUDA and CPU. On CUDA, it achieves 22% faster inference than YOLOv9, 56% faster than YOLOS, 
+                                and 82% faster than YOLO-DETR. On CPU, the improvements are even more significant with 57% faster 
+                                than YOLOv9, 82% faster than YOLOS, and 88% faster than YOLO-DETR.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Analysis -->
+                    <div class="result-subsection">
+                        <h3>4. Performance Analysis (Throughput Analysis)</h3>
+                        <p>
+                            Measuring inference speed across different models shows:
+                        </p>
+                        <div class="performance-comparison">
+                            <div class="performance-card best">
+                                <div class="performance-header">
+                                    <i class="fas fa-trophy"></i>
+                                    <h4>PYTHERA Detection</h4>
+                                </div>
+                                <div class="performance-value">~80</div>
+                                <div class="performance-unit">throughput</div>
+                            </div>
+
+                            <div class="performance-card">
+                                <div class="performance-header">
+                                    <i class="fas fa-chart-line"></i>
+                                    <h4>YOLOv12</h4>
+                                </div>
+                                <div class="performance-value">~55</div>
+                                <div class="performance-unit">throughput</div>
+                            </div>
+
+                            <div class="performance-card">
+                                <div class="performance-header">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <h4>YOLOv9</h4>
+                                </div>
+                                <div class="performance-value">~40</div>
+                                <div class="performance-unit">throughput</div>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container">
+                            <img src="image/eval_pythera_vs_yolov9_12.png" 
+                                 alt="Performance Analysis: Pythera vs YOLOv9 and YOLOv12" 
+                                 class="section-image">
+                        </div>
+
+                        <div class="result-highlights">
+                            <div class="highlight-box success">
+                                <strong>Conclusion:</strong> The PYTHERA model has achieved the initial goal - maintaining 
+                                high performance (only ~1-2% behind YOLOv9) while achieving extremely good inference speed 
+                                (~45% higher than YOLOv12 and ~100% higher than YOLOv9).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 PYTHERA Detection Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Contact Me -->
+    <div class="contact-me">
+        <a href="https://github.com/tanmainhat0502" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           aria-label="GitHub" 
+           class="contact-icon github"
+           title="GitHub">
+            <i class="fab fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/tan-mai-nhat-09a80b301/" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           aria-label="LinkedIn" 
+           class="contact-icon linkedin"
+           title="LinkedIn">
+            <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="mailto:nhattan0502@gmail.com" 
+           aria-label="Email" 
+           class="contact-icon email"
+           title="Email">
+            <i class="fas fa-envelope"></i>
+            <span class="contact-tooltip email-tooltip">nhattan0502@gmail.com</span>
+        </a>
+        <a href="tel:0858061644" 
+           aria-label="Phone" 
+           class="contact-icon phone"
+           title="Phone">
+            <i class="fas fa-phone"></i>
+            <span class="contact-tooltip phone-tooltip">0858061644</span>
+        </a>
+    </div>
+
+    <!-- Smooth Scroll Script -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
