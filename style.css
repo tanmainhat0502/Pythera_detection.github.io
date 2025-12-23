@@ -217,25 +217,16 @@ body {
 
 /* Video Demo */
 .video-demo {
-    margin: 40px 0;
-    padding: 30px;
-    background-color: var(--bg-secondary);
-    border-radius: 8px;
+    margin: 0;
+    padding: 0;
 }
 
 #video-demo {
     scroll-margin-top: 80px;
 }
 
-.video-demo h3 {
-    font-size: 2.5em;
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.section-title i.fab.fa-youtube {
     color: #ff0000;
-    border-bottom: 3px solid var(--primary-color);
-    padding-bottom: 10px;
 }
 
 .video-container {
